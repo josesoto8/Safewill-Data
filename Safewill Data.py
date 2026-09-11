@@ -1,3 +1,5 @@
+
+
 #Librerías.
 
 #Librería para conectar el código con el sistema operativo.
@@ -17,6 +19,37 @@ import openpyxl
 from datetime import datetime, timedelta
 #Librería para modificar aún mas la interfaz.
 import customtkinter as ctk
+import getpass
+import ctypes
+import random
+
+def obtener_nombre_usuario():
+    # 1. Intenta obtener el nombre visible de la cuenta de Windows (ej. "José")
+    try:
+        GetUserNameEx = ctypes.windll.secur32.GetUserNameExW
+        NameDisplay = 3
+        size = ctypes.c_ulong(0)
+        GetUserNameEx(NameDisplay, None, ctypes.byref(size))
+        buffer = ctypes.create_unicode_buffer(size.value)
+        if GetUserNameEx(NameDisplay, buffer, ctypes.byref(size)) and buffer.value.strip():
+            # Retorna el primer nombre de la cuenta
+            return buffer.value.split()[0].capitalize()
+    except Exception:
+        pass
+
+    # 2. Si falla, busca el usuario en las variables de entorno
+    nombre = os.environ.get("USERNAME") or os.environ.get("USER")
+    
+    if not nombre:
+        try:
+            nombre = os.getlogin()
+        except Exception:
+            try:
+                nombre = getpass.getuser()
+            except Exception:
+                nombre = "Usuario"
+
+    return nombre.capitalize()
 
 #Configuración visual de CustomTkinter
 ctk.set_appearance_mode("Light")
@@ -106,13 +139,39 @@ class CSVFixerAndMergerApp:
         except Exception:
             pass
 
+    #Interfaz, saludo inicial y botones
     #Interfaz, titulos y botones
     def create_widgets(self):
-        ctk.CTkLabel(
+        nombre_usuario = obtener_nombre_usuario()
+
+        mensajes_bienvenida = [
+            (f"¡Hola {nombre_usuario}!", "¿Qué archivos quieres que unamos hoy?"),
+            (f"¡Bienvenido, {nombre_usuario}!", "Vamos a unir esos CSVs."),
+            (f"¡Qué tal, {nombre_usuario}!", "¿Listo para procesar tus datos?"),
+            ("HOY NO QUIERO AYUDARTE!", f"Mentira, {nombre_usuario} a ver esos datos."),
+            ("¡Buen día!", f"Es hora de trabajar, {nombre_usuario}."),
+            ("¡Hola de nuevo!", "Selecciona los datos y yo hago el resto."),
+            (f"¡ahhhh, no dormi bien!", "aun asi estoy aqui para ayudartzZZzzZ."),
+            ('print("Hello World!")', ".py"),
+            (f"00010011100110110101:", f"Tranquilo {nombre_usuario}, hoy no habrá errores.")
+        ]
+
+        titulo_elegido, subtitulo_elegido = random.choice(mensajes_bienvenida)
+
+        self.lbl_titulo = ctk.CTkLabel(
             self.root,
-            text="Integrador de datos Safewill",
-            font=("Arial", 18, "bold"),
-        ).pack(pady=15)
+            text=titulo_elegido,
+            font=("Arial", 25, "bold")
+        )
+        self.lbl_titulo.pack(pady=(15, 2))
+
+        self.lbl_subtitulo = ctk.CTkLabel(
+            self.root,
+            text=subtitulo_elegido,
+            font=("Arial", 13, "italic"),
+            text_color="gray"
+        )
+        self.lbl_subtitulo.pack(pady=(0, 15))
 
         #Cargar archivos
         file_frame = ctk.CTkFrame(self.root, fg_color="transparent")
@@ -123,8 +182,9 @@ class CSVFixerAndMergerApp:
             text="Cargar archivos CSV",
             command=self.load_csvs,
             #Colores de los botones
-            fg_color="#E43F43",
-            hover_color="#C03337",
+            fg_color="#FFCE44",
+            hover_color="#FFCE44",
+            text_color="#000000",
             font=("Arial", 14, "bold"),
             corner_radius=24,
             height=36,
@@ -149,9 +209,9 @@ class CSVFixerAndMergerApp:
             folder_frame,
             text="Carpeta de destino",
             command=self.select_output_folder,
-            fg_color="#EFD972",
-            hover_color="#DDC86A",
-            text_color="#000000",
+            fg_color="#007AFF",
+            hover_color="#007AFF",
+            text_color="#F5F3F3",
             font=("Arial", 14, "bold"),
             corner_radius=24,
             height=36,
@@ -208,8 +268,8 @@ class CSVFixerAndMergerApp:
             btn_frame,
             text="Guardar como CSV (.csv)",
             command=self.save_csv,
-            fg_color="#081E50",
-            hover_color="#06163B",
+            fg_color="#022B8B",
+            hover_color="#002A8B",
             font=("Arial", 15, "bold"),
             corner_radius=24,
             height=40,
@@ -221,8 +281,9 @@ class CSVFixerAndMergerApp:
             btn_frame,
             text="Guardar como Excel (.xlsx)",
             command=self.save_excel,
-            fg_color="#3F48CC",
-            hover_color="#355680",
+            fg_color="#F83B3B",
+            hover_color="#E24343",
+            text_color="#000000",
             font=("Arial", 15, "bold"),
             corner_radius=24,
             height=40,

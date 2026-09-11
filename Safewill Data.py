@@ -1,5 +1,3 @@
-
-
 #Librerías.
 
 #Librería para conectar el código con el sistema operativo.
@@ -21,10 +19,11 @@ from datetime import datetime, timedelta
 import customtkinter as ctk
 import getpass
 import ctypes
+#Librería con la funcion de aleatoriedad que se usa en los saludos.
 import random
 
 def obtener_nombre_usuario():
-    # 1. Intenta obtener el nombre visible de la cuenta de Windows (ej. "José")
+    #Para obtener el nombre visible de la cuenta que usa el sistema operativo.
     try:
         GetUserNameEx = ctypes.windll.secur32.GetUserNameExW
         NameDisplay = 3

@@ -21,6 +21,7 @@ import getpass
 import ctypes
 #Librería con la funcion de aleatoriedad que se usa en los saludos.
 import random
+from PIL import Image
 
 def obtener_nombre_usuario():
     #Para obtener el nombre visible de la cuenta que usa el sistema operativo.
@@ -86,6 +87,7 @@ class CSVFixerAndMergerApp:
         self.root.configure(fg_color="white")
 
         #Icono para Windows
+        # Icono para Windows
         icono_path = resource_path("icono.ico")
 
         try:
@@ -101,6 +103,20 @@ class CSVFixerAndMergerApp:
         self.file_paths = []
         self.cleaned_files_data = []
         self.output_folder = self._cargar_configuracion()
+
+        # --- CARGA DEL LOGO CORREGIDA ---
+        logo_path = resource_path("logo.png")
+        if os.path.exists(logo_path):
+            try:
+                img_logo = Image.open(logo_path).convert("RGBA")
+                self.logo_ctk = ctk.CTkImage(light_image=img_logo, dark_image=img_logo, size=(285, 60))
+                # Usar self.root en lugar de root por consistencia en la clase
+                lbl_logo = ctk.CTkLabel(self.root, image=self.logo_ctk, text="")
+                lbl_logo.pack(pady=(8, 2))
+            except Exception as e:
+                print(f"Error al cargar el logo: {e}")
+        else:
+            print(f"No se encontró el archivo de logo en: {logo_path}")
 
         self.create_widgets()
         self._actualizar_lbl_folder()
@@ -152,7 +168,13 @@ class CSVFixerAndMergerApp:
             ("¡Hola de nuevo!", "Selecciona los datos y yo hago el resto."),
             (f"¡ahhhh, no dormi bien!", "aun asi estoy aqui para ayudartzZZzzZ."),
             ('print("Hello World!")', ".py"),
-            (f"00010011100110110101:", f"Tranquilo {nombre_usuario}, hoy no habrá errores.")
+            (f"NameError: name 'name' is not defined", f"Tranquilo {nombre_usuario}, hoy no habrá errores."),
+            (f"Buenos días, {nombre_usuario}.", "Módulo de procesamiento y unificación de datos listo."),
+            (f"Estimado/a {nombre_usuario},", "Por favor, seleccione los archivos CSV a consolidar."),
+            (f"Bienvenido a su estación de trabajo, {nombre_usuario}.", f"Sesión iniciada con éxito."),
+            (f"Listo para procesar la información requerida.", f"{nombre_usuario}."),
+            (f"Buen día, {nombre_usuario}.","Inicie cargando los conjuntos de datos correspondientes."),
+            (f"Herramienta de depuración y unión de archivos lista para operar,"f" {nombre_usuario}.")
         ]
 
         titulo_elegido, subtitulo_elegido = random.choice(mensajes_bienvenida)
